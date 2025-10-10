@@ -7,14 +7,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <style>
         :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --success: #4bb543;
-            --danger: #f44336;
-            --warning: #ff9800;
-            --info: #2196f3;
-            --dark: #343a40;
-            --light: #f8f9fa;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #8b5cf6;
+            --accent: #06d6a0;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            --radius: 16px;
+            --sidebar-width: 280px;
+        }
+
+        .dark-mode {
+            --text: #f1f5f9;
+            --text-light: #94a3b8;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
         }
         
         * {
@@ -25,14 +38,98 @@
         }
         
         body {
-            background-color: #f5f7fb;
-            color: #333;
+            background-color: var(--bg);
+            color: var(--text);
+            transition: all 0.3s ease;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--card);
+            height: 100vh;
+            position: fixed;
+            left: -var(--sidebar-width);
+            top: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar-header {
             padding: 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dark-mode .sidebar-header {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: rgba(37, 99, 235, 0.1);
+            border-left-color: var(--primary);
+        }
+
+        .menu-item.active {
+            background: rgba(37, 99, 235, 0.1);
+            border-left-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .overlay.show {
+            display: block;
         }
         
         .container {
-            max-width: 1400px;
-            margin: 0 auto;
+            flex: 1;
+            padding: 20px;
+            margin-left: 0;
+            transition: all 0.3s ease;
+        }
+
+        .container.sidebar-open {
+            margin-left: var(--sidebar-width);
         }
         
         .header {
@@ -47,7 +144,7 @@
         .page-title {
             font-size: 24px;
             font-weight: 600;
-            color: var(--dark);
+            color: var(--text);
         }
 
         .admin-controls {
@@ -59,13 +156,16 @@
         .control-btn {
             padding: 8px 16px;
             border: none;
-            border-radius: 5px;
+            border-radius: var(--radius);
             cursor: pointer;
             font-size: 14px;
             display: flex;
             align-items: center;
             gap: 5px;
             transition: all 0.3s;
+            background: var(--card);
+            color: var(--text);
+            box-shadow: var(--shadow);
         }
 
         .control-btn.primary {
@@ -74,25 +174,40 @@
         }
 
         .control-btn.success {
-            background: var(--success);
+            background: var(--accent);
             color: white;
         }
+
+        .menu-toggle {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+        }
         
-        /* Stats Cards */
+        /* Stats Cards - 2 columns */
         .stats-cards {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             margin-bottom: 20px;
         }
         
         .stat-card {
-            background: white;
-            border-radius: 10px;
+            background: var(--card);
+            border-radius: var(--radius);
             padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: var(--shadow);
             display: flex;
             align-items: center;
+            border-left: 4px solid var(--primary);
         }
         
         .stat-icon {
@@ -108,19 +223,19 @@
         }
         
         .icon-primary { background: var(--primary); }
-        .icon-success { background: var(--success); }
+        .icon-success { background: var(--accent); }
         .icon-warning { background: var(--warning); }
-        .icon-danger { background: var(--danger); }
-        .icon-info { background: var(--info); }
-        .icon-secondary { background: var(--secondary); }
+        .icon-danger { background: var(--error); }
+        .icon-info { background: var(--secondary); }
         
         .stat-info h3 {
             font-size: 24px;
             margin-bottom: 5px;
+            color: var(--text);
         }
         
         .stat-info p {
-            color: #6c757d;
+            color: var(--text-light);
             font-size: 14px;
         }
         
@@ -131,24 +246,24 @@
             flex-wrap: wrap;
             align-items: center;
             margin-bottom: 20px;
-            background: white;
+            background: var(--card);
             padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
         }
         
         .search-box {
             display: flex;
             align-items: center;
-            background: #f8f9fa;
+            background: var(--bg);
             border-radius: 25px;
             padding: 0 15px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--text-light);
             transition: all 0.3s;
         }
         
         .search-box:focus-within {
-            box-shadow: 0 2px 15px rgba(67, 97, 238, 0.2);
+            box-shadow: 0 2px 15px rgba(37, 99, 235, 0.2);
             border-color: var(--primary);
         }
         
@@ -158,10 +273,11 @@
             outline: none;
             width: 250px;
             background: transparent;
+            color: var(--text);
         }
         
         .search-box i {
-            color: #6c757d;
+            color: var(--text-light);
         }
         
         .filter-section {
@@ -181,19 +297,22 @@
             margin-bottom: 5px;
             font-weight: 500;
             font-size: 14px;
+            color: var(--text);
         }
         
         .filter-group input, .filter-group select {
             padding: 8px 12px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--text-light);
             border-radius: 5px;
             font-size: 14px;
+            background: var(--bg);
+            color: var(--text);
         }
         
         /* Status Tabs */
         .status-tabs {
             display: flex;
-            background: #f8f9fa;
+            background: var(--bg);
             border-radius: 5px;
             overflow: hidden;
             margin-bottom: 15px;
@@ -207,6 +326,7 @@
             flex: 1;
             font-size: 14px;
             font-weight: 500;
+            color: var(--text);
         }
         
         .status-tab.active {
@@ -216,10 +336,10 @@
         
         /* Data Table */
         .data-table-container {
-            background: white;
-            border-radius: 10px;
+            background: var(--card);
+            border-radius: var(--radius);
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: var(--shadow);
             margin-bottom: 20px;
             overflow-x: auto;
         }
@@ -229,7 +349,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .dark-mode .table-header {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         
         table {
@@ -241,18 +365,23 @@
         th, td {
             padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            color: var(--text);
+        }
+
+        .dark-mode th, .dark-mode td {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         
         th {
-            background-color: #f8f9fa;
+            background-color: var(--bg);
             font-weight: 600;
             position: sticky;
             top: 0;
         }
         
         tr:hover {
-            background-color: #f8f9fa;
+            background-color: var(--bg);
         }
         
         .status {
@@ -279,7 +408,7 @@
             gap: 5px;
         }
         
-        .btn-view { background: var(--info); color: white; }
+        .btn-view { background: var(--primary); color: white; }
         
         /* Text overflow protection */
         .trx-id {
@@ -305,8 +434,8 @@
         }
         
         .modal-content {
-            background: white;
-            border-radius: 10px;
+            background: var(--card);
+            border-radius: var(--radius);
             padding: 20px;
             width: 100%;
             max-width: 600px;
@@ -335,14 +464,18 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
             padding-bottom: 15px;
             position: relative;
             z-index: 20;
         }
+
+        .dark-mode .modal-header {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
         
         .close-btn {
-            background: var(--danger);
+            background: var(--error);
             color: white;
             border: none;
             border-radius: 50%;
@@ -370,7 +503,7 @@
         
         .detail-label {
             font-weight: 500;
-            color: #6c757d;
+            color: var(--text-light);
             margin-bottom: 5px;
             font-size: 14px;
         }
@@ -378,6 +511,7 @@
         .detail-value {
             font-weight: 500;
             word-break: break-word;
+            color: var(--text);
         }
         
         .payment-methods {
@@ -387,7 +521,7 @@
         }
         
         .payment-method {
-            background: #f8f9fa;
+            background: var(--bg);
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 10px;
@@ -401,7 +535,7 @@
         }
         
         .copy-btn {
-            background: var(--info);
+            background: var(--primary);
             color: white;
             border: none;
             border-radius: 4px;
@@ -416,45 +550,53 @@
         .action-section {
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 1px solid #eee;
+            border-top: 1px solid rgba(0,0,0,0.1);
             position: relative;
             z-index: 20;
+        }
+
+        .dark-mode .action-section {
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
         
         .action-select {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--text-light);
             border-radius: 5px;
             margin-bottom: 15px;
             font-size: 14px;
+            background: var(--bg);
+            color: var(--text);
         }
         
         .action-select:disabled {
-            background-color: #f8f9fa;
+            background-color: var(--bg);
             cursor: not-allowed;
         }
         
         .reason-input {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--text-light);
             border-radius: 8px;
             margin-bottom: 15px;
             font-size: 14px;
             resize: vertical;
             min-height: 80px;
             display: none;
+            background: var(--bg);
+            color: var(--text);
         }
         
         .reason-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
         }
         
         .reason-input:disabled {
-            background-color: #f8f9fa;
+            background-color: var(--bg);
             cursor: not-allowed;
         }
         
@@ -472,11 +614,11 @@
         }
         
         .submit-btn:hover:not(:disabled) {
-            background: var(--secondary);
+            background: var(--primary-dark);
         }
         
         .submit-btn:disabled {
-            background-color: #6c757d;
+            background-color: var(--text-light);
             cursor: not-allowed;
         }
         
@@ -491,10 +633,11 @@
         
         .pagination-btn {
             padding: 8px 12px;
-            background: white;
-            border: 1px solid #ddd;
+            background: var(--card);
+            border: 1px solid var(--text-light);
             border-radius: 5px;
             cursor: pointer;
+            color: var(--text);
         }
         
         .pagination-btn.active {
@@ -537,23 +680,23 @@
         }
         
         .notification.success {
-            background: var(--success);
-            border-left: 5px solid #3a9e34;
+            background: var(--accent);
+            border-left: 5px solid #059669;
         }
         
         .notification.error {
-            background: var(--danger);
-            border-left: 5px solid #d32f2f;
+            background: var(--error);
+            border-left: 5px solid #dc2626;
         }
         
         .notification.warning {
             background: var(--warning);
-            border-left: 5px solid #f57c00;
+            border-left: 5px solid #d97706;
         }
         
         .notification.info {
-            background: var(--info);
-            border-left: 5px solid #1976d2;
+            background: var(--primary);
+            border-left: 5px solid #1d4ed8;
         }
         
         .notification i {
@@ -604,18 +747,21 @@
             font-weight: 500;
             margin-bottom: 5px;
             display: block;
+            color: var(--text);
         }
 
         .setting-input {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--text-light);
             border-radius: 5px;
             font-size: 14px;
+            background: var(--bg);
+            color: var(--text);
         }
         
         /* Responsive */
-        @media (max-width: 468px) {
+        @media (max-width: 768px) {
             .stats-cards {
                 grid-template-columns: 1fr;
             }
@@ -648,27 +794,63 @@
             .settings-grid {
                 grid-template-columns: 1fr;
             }
+
+            .sidebar {
+                width: 100%;
+                left: -100%;
+            }
+
+            .container.sidebar-open {
+                margin-left: 0;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Sidebar Overlay -->
+    <div class="overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 style="color: var(--text);">Admin Panel</h3>
+            <button class="close-btn" id="closeSidebar">&times;</button>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-item active" data-page="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="menu-item" data-page="settings">
+                <i class="fas fa-cog"></i>
+                <span>Payment Settings</span>
+            </div>
+            <div class="menu-item" id="themeToggle">
+                <i class="fas fa-moon"></i>
+                <span>Dark Mode</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container" id="mainContainer">
         <!-- Header -->
         <div class="header">
-            <h1 class="page-title">Payment Request Management</h1>
-            <div class="admin-controls">
-                <button class="control-btn primary" id="settingsBtn">
-                    <i class="fas fa-cog"></i> Settings
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
                 </button>
+                <h1 class="page-title">Payment Request Management</h1>
+            </div>
+            <div class="admin-controls">
                 <button class="control-btn success" id="refreshBtn">
                     <i class="fas fa-sync-alt"></i> Refresh
                 </button>
             </div>
         </div>
 
-        <!-- Stats Cards -->
+        <!-- Stats Cards - 2 columns -->
         <div class="stats-cards">
-            <!-- Today Request & Total Payment -->
             <div class="stat-card">
                 <div class="stat-icon icon-primary">
                     <i class="fas fa-wallet"></i>
@@ -679,7 +861,7 @@
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon icon-secondary">
+                <div class="stat-icon icon-info">
                     <i class="fas fa-money-bill-wave"></i>
                 </div>
                 <div class="stat-info">
@@ -688,9 +870,8 @@
                 </div>
             </div>
             
-            <!-- Today User & Total User -->
             <div class="stat-card">
-                <div class="stat-icon icon-info">
+                <div class="stat-icon icon-success">
                     <i class="fas fa-users"></i>
                 </div>
                 <div class="stat-info">
@@ -708,7 +889,6 @@
                 </div>
             </div>
             
-            <!-- Total Rejected & Total Approved -->
             <div class="stat-card">
                 <div class="stat-icon icon-danger">
                     <i class="fas fa-times-circle"></i>
@@ -764,9 +944,9 @@
         <!-- Requests Table -->
         <div class="data-table-container">
             <div class="table-header">
-                <h3>Payment Requests</h3>
+                <h3 style="color: var(--text);">Payment Requests</h3>
                 <div>
-                    <select id="rowsPerPage">
+                    <select id="rowsPerPage" style="background: var(--bg); color: var(--text); border: 1px solid var(--text-light); padding: 5px; border-radius: 5px;">
                         <option value="10">10 rows</option>
                         <option value="25">25 rows</option>
                         <option value="50">50 rows</option>
@@ -786,7 +966,7 @@
                 </thead>
                 <tbody id="requestsTable">
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 20px;">Loading requests...</td>
+                        <td colspan="6" style="text-align: center; padding: 20px; color: var(--text);">Loading requests...</td>
                     </tr>
                 </tbody>
             </table>
@@ -807,7 +987,7 @@
             <div class="watermark" id="watermark">PAID</div>
             
             <div class="modal-header">
-                <h3>Request Details</h3>
+                <h3 style="color: var(--text);">Request Details</h3>
                 <button class="close-btn" id="closeModal">&times;</button>
             </div>
             <div class="modal-body">
@@ -843,7 +1023,7 @@
                 </div>
                 
                 <div class="payment-methods">
-                    <h4>Payment Methods</h4>
+                    <h4 style="color: var(--text); margin-bottom: 15px;">Payment Methods</h4>
                     <div id="paymentMethodsList">
                         <!-- Payment methods will be added here -->
                     </div>
@@ -867,7 +1047,7 @@
     <div class="modal" id="settingsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Payment Settings</h3>
+                <h3 style="color: var(--text);">Payment Settings</h3>
                 <button class="close-btn" id="closeSettings">&times;</button>
             </div>
             <div class="modal-body">
@@ -895,27 +1075,24 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
         // Firebase Configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDVSA8ip1vBTs_HFZGkXAPct0v-gU6CzG0",
-  authDomain: "testingpp-935bc.firebaseapp.com",
-  databaseURL: "https://testingpp-935bc-default-rtdb.firebaseio.com",
-  projectId: "testingpp-935bc",
-  storageBucket: "testingpp-935bc.firebasestorage.app",
-  messagingSenderId: "303082886262",
-  appId: "1:303082886262:web:0be011a2659985c3a1bb57",
-  measurementId: "G-TVG8YCF2N1"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyDVSA8ip1vBTs_HFZGkXAPct0v-gU6CzG0",
+            authDomain: "testingpp-935bc.firebaseapp.com",
+            databaseURL: "https://testingpp-935bc-default-rtdb.firebaseio.com",
+            projectId: "testingpp-935bc",
+            storageBucket: "testingpp-935bc.firebasestorage.app",
+            messagingSenderId: "303082886262",
+            appId: "1:303082886262:web:0be011a2659985c3a1bb57",
+            measurementId: "G-TVG8YCF2N1"
+        };
         
         // Firebase initialization
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const realtimeDB = firebase.database();
         
-        // Telegram Bot Token - Replace with your actual bot token
+        // Telegram Bot Token
         const telegramBotToken = "7673657711:AAG9aHlpI8_Egvwi0fY9rxA4qyEfqOw16nU";
         
         // Global Variables
@@ -931,7 +1108,34 @@ const firebaseConfig = {
             loadAllRequests();
             setupEventListeners();
             setupRealtimeListeners();
+            initializeTheme();
         });
+
+        // Initialize theme from localStorage
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('adminTheme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.querySelector('#themeToggle i').className = 'fas fa-sun';
+                document.querySelector('#themeToggle span').textContent = 'Light Mode';
+            }
+        }
+
+        // Toggle theme
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            
+            if (isDarkMode) {
+                document.querySelector('#themeToggle i').className = 'fas fa-sun';
+                document.querySelector('#themeToggle span').textContent = 'Light Mode';
+                localStorage.setItem('adminTheme', 'dark');
+            } else {
+                document.querySelector('#themeToggle i').className = 'fas fa-moon';
+                document.querySelector('#themeToggle span').textContent = 'Dark Mode';
+                localStorage.setItem('adminTheme', 'light');
+            }
+        }
 
         // Load payment settings
         function loadPaymentSettings() {
@@ -939,7 +1143,6 @@ const firebaseConfig = {
                 .then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        // Update settings modal
                         document.getElementById('minWithdraw').value = data.minWithdraw || 50;
                         document.getElementById('maxWithdraw').value = data.maxWithdraw || 50000;
                         document.getElementById('withdrawFee').value = data.withdrawFee || 0;
@@ -950,30 +1153,37 @@ const firebaseConfig = {
                 });
         }
 
-        // Setup realtime listeners
+        // Setup realtime listeners - ONLY Firestore
         function setupRealtimeListeners() {
-            // Listen for new withdraw requests
-            realtimeDB.ref('withdraw_requests').on('value', (snapshot) => {
+            // Listen to Firestore userWithdraw collection only
+            db.collection('userWithdraw').onSnapshot((snapshot) => {
                 loadAllRequests();
             });
         }
 
-        // Load all withdrawal requests from Firebase
+        // Load all withdrawal requests from Firestore ONLY
         function loadAllRequests() {
             // Show loading state
-            document.getElementById('requestsTable').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">Loading requests...</td></tr>';
+            document.getElementById('requestsTable').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: var(--text);">Loading requests...</td></tr>';
             
-            realtimeDB.ref('withdraw_requests').orderByChild('timestamp').once('value')
-                .then((snapshot) => {
+            db.collection('userWithdraw')
+                .orderBy('createdAt', 'desc')
+                .get()
+                .then((querySnapshot) => {
                     allRequests = [];
-                    snapshot.forEach((childSnapshot) => {
-                        const request = childSnapshot.val();
-                        request.id = childSnapshot.key;
+                    querySnapshot.forEach((doc) => {
+                        const request = doc.data();
+                        request.id = doc.id;
+                        
+                        // Ensure timestamp is properly set
+                        if (request.createdAt && request.createdAt.toDate) {
+                            request.timestamp = request.createdAt.toDate().getTime();
+                        } else if (!request.timestamp) {
+                            request.timestamp = Date.now();
+                        }
+                        
                         allRequests.push(request);
                     });
-                    
-                    // Sort by timestamp descending (newest first)
-                    allRequests.sort((a, b) => b.timestamp - a.timestamp);
                     
                     // Update stats
                     updateStats();
@@ -986,7 +1196,7 @@ const firebaseConfig = {
                 })
                 .catch((error) => {
                     console.error('Error loading requests:', error);
-                    document.getElementById('requestsTable').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: var(--danger);">Error loading requests. Please try again.</td></tr>';
+                    document.getElementById('requestsTable').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: var(--error);">Error loading requests. Please try again.</td></tr>';
                     showNotification('error', 'Error', 'Failed to load payment requests.');
                 });
         }
@@ -1013,11 +1223,11 @@ const firebaseConfig = {
                 // Today Request
                 if (requestDate >= today) {
                     todayRequestAmount += amount;
-                    todayUsers.add(request.chatId);
+                    todayUsers.add(request.userId || request.chatId);
                 }
                 
                 // All Users
-                allUsers.add(request.chatId);
+                allUsers.add(request.userId || request.chatId);
                 
                 // Rejected and Approved amounts
                 if (request.status === 'rejected') {
@@ -1041,7 +1251,7 @@ const firebaseConfig = {
             const tableBody = document.getElementById('requestsTable');
             
             if (filteredRequests.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No requests found</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: var(--text);">No requests found</td></tr>';
                 document.getElementById('pagination').style.display = 'none';
                 return;
             }
@@ -1062,11 +1272,12 @@ const firebaseConfig = {
             pageRequests.forEach((request) => {
                 const date = new Date(request.timestamp);
                 const formattedDate = date.toLocaleDateString();
+                const chatId = request.userId || request.chatId;
                 
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><span class="trx-id" title="${request.id}">${request.id}</span></td>
-                    <td>${request.chatId}</td>
+                    <td>${chatId}</td>
                     <td>${request.amount} ৳</td>
                     <td>${formattedDate}</td>
                     <td><span class="status status-${request.status}">${request.status}</span></td>
@@ -1147,12 +1358,15 @@ const firebaseConfig = {
             
             const date = new Date(request.timestamp);
             const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+            const chatId = request.userId || request.chatId;
+            const username = request.username || 'N/A';
+            const fullName = request.fullName || 'N/A';
             
             // Populate modal with request details
             document.getElementById('detailTrxId').textContent = request.id;
-            document.getElementById('detailChatId').textContent = request.chatId;
-            document.getElementById('detailUsername').textContent = request.username || 'N/A';
-            document.getElementById('detailFullName').textContent = request.fullName || 'N/A';
+            document.getElementById('detailChatId').textContent = chatId;
+            document.getElementById('detailUsername').textContent = username;
+            document.getElementById('detailFullName').textContent = fullName;
             document.getElementById('detailAmount').textContent = request.amount + ' ৳';
             document.getElementById('detailDate').textContent = formattedDate;
             
@@ -1183,7 +1397,7 @@ const firebaseConfig = {
                     paymentMethodsList.appendChild(methodElement);
                 });
             } else {
-                paymentMethodsList.innerHTML = '<p>No payment methods provided</p>';
+                paymentMethodsList.innerHTML = '<p style="color: var(--text-light);">No payment methods provided</p>';
             }
             
             // Add copy event listeners
@@ -1239,6 +1453,25 @@ const firebaseConfig = {
 
         // Setup event listeners
         function setupEventListeners() {
+            // Menu toggle
+            document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
+            document.getElementById('closeSidebar').addEventListener('click', toggleSidebar);
+            document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar);
+
+            // Theme toggle
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+            // Menu items
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const page = this.getAttribute('data-page');
+                    if (page === 'settings') {
+                        document.getElementById('settingsModal').style.display = 'flex';
+                        toggleSidebar();
+                    }
+                });
+            });
+            
             // Status tabs
             document.querySelectorAll('.status-tab').forEach(tab => {
                 tab.addEventListener('click', function() {
@@ -1286,11 +1519,6 @@ const firebaseConfig = {
                 }
             });
 
-            // Settings button
-            document.getElementById('settingsBtn').addEventListener('click', function() {
-                document.getElementById('settingsModal').style.display = 'flex';
-            });
-
             // Close settings
             document.getElementById('closeSettings').addEventListener('click', function() {
                 document.getElementById('settingsModal').style.display = 'none';
@@ -1304,6 +1532,17 @@ const firebaseConfig = {
                 loadAllRequests();
                 showNotification('info', 'Refreshed', 'Data has been refreshed');
             });
+        }
+
+        // Toggle sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const container = document.getElementById('mainContainer');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+            container.classList.toggle('sidebar-open');
         }
 
         // Save payment settings
@@ -1346,7 +1585,7 @@ const firebaseConfig = {
             if (searchTerm) {
                 filteredRequests = filteredRequests.filter(request => 
                     (request.id && request.id.toLowerCase().includes(searchTerm)) || 
-                    (request.chatId && request.chatId.toLowerCase().includes(searchTerm))
+                    ((request.userId || request.chatId) && (request.userId || request.chatId).toLowerCase().includes(searchTerm))
                 );
             }
             
@@ -1395,89 +1634,134 @@ const firebaseConfig = {
         }
 
         // Approve a request
-        function approveRequest(request) {
+        async function approveRequest(request) {
             // Show loading state
             document.getElementById('submitAction').disabled = true;
             document.getElementById('submitAction').textContent = 'Processing...';
             
-            realtimeDB.ref('withdraw_requests/' + request.id).update({
-                status: 'approved',
-                processedAt: Date.now()
-            })
-            .then(() => {
-                // Send Telegram message
-                sendTelegramMessage(request.chatId, 
-                    `✅ আপনার পেমেন্ট রিকোয়েস্ট সফল হয়েছে। অনুগ্রহ করে আপনার অ্যাকাউন্ট চেক করুন।\n\n- Full Name: ${request.fullName}\n- Amount: ${request.amount}৳\n- Status: Approved\n- Date: ${new Date(request.timestamp).toLocaleDateString()}`
-                );
+            try {
+                const amount = parseFloat(request.amount);
+                const userId = request.userId || request.chatId;
+
+                // Update user balance - add to totalWithdraw
+                const userBalanceRef = db.collection('userBalance').doc(userId);
+                const userBalanceDoc = await userBalanceRef.get();
                 
+                if (userBalanceDoc.exists) {
+                    const userData = userBalanceDoc.data();
+                    const currentTotalWithdraw = parseFloat(userData.totalWithdraw) || 0;
+                    
+                    await userBalanceRef.update({
+                        totalWithdraw: currentTotalWithdraw + amount
+                    });
+                } else {
+                    await userBalanceRef.set({
+                        totalWithdraw: amount,
+                        mainBalance: 0
+                    });
+                }
+
+                // Update request status in Firestore
+                await db.collection('userWithdraw').doc(request.id).update({
+                    status: 'approved',
+                    processedAt: new Date()
+                });
+
+                // Send Telegram message
+                await sendTelegramMessage(userId, 
+                    `✅ আপনার পেমেন্ট রিকোয়েস্ট সফল হয়েছে।\n\n- পরিমাণ: ${amount}৳\n- স্ট্যাটাস: Approved\n- তারিখ: ${new Date().toLocaleDateString('bn-BD')}\n\nঅনুগ্রহ করে আপনার অ্যাকাউন্ট চেক করুন।`
+                );
+
                 showNotification('success', 'Success', 'Request approved successfully');
                 document.getElementById('detailsModal').style.display = 'none';
-                loadAllRequests(); // Reload requests
-            })
-            .catch((error) => {
+                loadAllRequests();
+            } catch (error) {
                 console.error('Error approving request:', error);
                 showNotification('error', 'Error', 'Failed to approve request');
                 document.getElementById('submitAction').disabled = false;
                 document.getElementById('submitAction').textContent = 'Submit Action';
-            });
+            }
         }
 
         // Reject a request
-        function rejectRequest(request, reason) {
+        async function rejectRequest(request, reason) {
             // Show loading state
             document.getElementById('submitAction').disabled = true;
             document.getElementById('submitAction').textContent = 'Processing...';
             
-            realtimeDB.ref('withdraw_requests/' + request.id).update({
-                status: 'rejected',
-                rejectReason: reason,
-                processedAt: Date.now()
-            })
-            .then(() => {
-                // Send Telegram message
-                sendTelegramMessage(request.chatId, 
-                    `❌ আপনার পেমেন্ট রিকোয়েস্ট বাতিল করা হয়েছে।\n\nকারণ: ${reason}\n- Full Name: ${request.fullName}\n- Amount: ${request.amount}৳\n- Status: Rejected\n- Date: ${new Date(request.timestamp).toLocaleDateString()}`
-                );
+            try {
+                const amount = parseFloat(request.amount);
+                const userId = request.userId || request.chatId;
+
+                // Update user balance - return amount to mainBalance
+                const userBalanceRef = db.collection('userBalance').doc(userId);
+                const userBalanceDoc = await userBalanceRef.get();
                 
+                if (userBalanceDoc.exists) {
+                    const userData = userBalanceDoc.data();
+                    const currentMainBalance = parseFloat(userData.mainBalance) || 0;
+                    
+                    await userBalanceRef.update({
+                        mainBalance: currentMainBalance + amount
+                    });
+                } else {
+                    await userBalanceRef.set({
+                        mainBalance: amount,
+                        totalWithdraw: 0
+                    });
+                }
+
+                // Update request status in Firestore
+                await db.collection('userWithdraw').doc(request.id).update({
+                    status: 'rejected',
+                    rejectReason: reason,
+                    processedAt: new Date()
+                });
+
+                // Send Telegram message
+                await sendTelegramMessage(userId, 
+                    `❌ আপনার পেমেন্ট রিকোয়েস্ট বাতিল করা হয়েছে।\n\nকারণ: ${reason}\n- পরিমাণ: ${amount}৳\n- স্ট্যাটাস: Rejected\n- তারিখ: ${new Date().toLocaleDateString('bn-BD')}\n\nটাকা আবার আপনার ব্যালেন্সে ফেরত দেওয়া হয়েছে।`
+                );
+
                 showNotification('success', 'Success', 'Request rejected successfully');
                 document.getElementById('detailsModal').style.display = 'none';
-                loadAllRequests(); // Reload requests
-            })
-            .catch((error) => {
+                loadAllRequests();
+            } catch (error) {
                 console.error('Error rejecting request:', error);
                 showNotification('error', 'Error', 'Failed to reject request');
                 document.getElementById('submitAction').disabled = false;
                 document.getElementById('submitAction').textContent = 'Submit Action';
-            });
+            }
         }
 
         // Send message via Telegram Bot
-        function sendTelegramMessage(chatId, message) {
-            if (!telegramBotToken || telegramBotToken === "7673657711:AAG9aHlpI8_Egvwi0fY9rxA4qyEfqOw16nU") {
+        async function sendTelegramMessage(chatId, message) {
+            if (!telegramBotToken) {
                 console.log("Telegram bot token not configured. Message would be sent to:", chatId);
                 console.log("Message content:", message);
                 return;
             }
             
-            fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    chat_id: chatId,
-                    text: message
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message,
+                        parse_mode: 'HTML'
+                    })
+                });
+                
+                const data = await response.json();
                 if (!data.ok) {
                     console.error('Failed to send Telegram message:', data);
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error sending Telegram message:', error);
-            });
+            }
         }
 
         // Show notification
