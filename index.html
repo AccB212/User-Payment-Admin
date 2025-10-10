@@ -1720,7 +1720,7 @@
 
                 // Send Telegram message
                 await sendTelegramMessage(userId, 
-                    `❌ আপনার পেমেন্ট রিকোয়েস্ট বাতিল করা হয়েছে।\n\nকারণ: ${reason}\n- পরিমাণ: ${amount}৳\n- স্ট্যাটাস: Rejected\n- তারিখ: ${new Date().toLocaleDateString('bn-BD')}\n\nটাকা আবার আপনার ব্যালেন্সে ফেরত দেওয়া হয়েছে।`
+                    `❌ আপনার পেমেন্ট রিকোয়েস্ট বাতিল করা হয়েছে।\n\nপরিমাণ: ${amount}৳\n- স্ট্যাটাস: Rejected\n- তারিখ: ${new Date().toLocaleDateString('bn-BD')}\n- কারণ: ${reason}\n\nটাকা আবার আপনার ব্যালেন্সে ফেরত দেওয়া হয়েছে।`
                 );
 
                 showNotification('success', 'Success', 'Request rejected successfully');
